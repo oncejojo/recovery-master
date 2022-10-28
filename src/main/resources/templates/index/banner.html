@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='Banner管理',active='banner'">
+<header th:replace="index/fragments/header::headerFragment(${title},${active})"></header>
+<body class="fixed-left">
+
+<div id="wrapper">
+    <div th:replace="index/fragments/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+<!--      新增modal            -->
+                    <div class="modal fade" id="addModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form id="loginForm" role="form" enctype="multipart/form-data">
+                                            <label for="exampleInputEmail1">Banner（建议长宽比为2：1）</label>
+                                            <div class="form-group">
+
+                                                 <input id="filed" type="file" accept="image" name="file"/>
+                                                 <image id="imgShow" src=""  style="width :350px; height: 180px"/>
+                                                 <input id="bannerImage" type="hidden" value=""/>
+                                            </div>
+                                        </form>
+                                     </div>
+                                </div>
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return addNotice();">保存</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+<!--          修改modal            -->
+                    <div class="modal fade" id="editModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="col-md-12 column">
+                                <form role="form" >
+                                    <div class="form-group">
+                                         <image id="noticeContentEdit" src="" style="height: 300px" class="form-control"></textarea>
+                                    </div>
+                                </form>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="view">
+                       <nav class="navbar navbar-default" role="navigation">
+                           <div class="collapse navbar-collapse" id="bs-primary-navbar-collapse-1">
+                               <ul class="nav navbar-nav">
+                                   <li class="active">
+                                       <a data-toggle="modal" data-target="#addModal" >新增</a>
+                                   </li>
+                               </ul>
+<!--                                <form class="navbar-form navbar-left" role="search" style="margin: 17px 17px" id="searchForm"> -->
+<!--                                    <div class="form-group"> -->
+<!--                                        <input id="checkTitle" type="text" class="form-control" value="" name="title" placeholder="请输入文章标题"> -->
+<!--                                    </div> -->
+<!--                                    <button type="submit" th:onsubmit="return searchUser(1);" class="btn btn-info">查询</button> -->
+<!--                                    <button type="submit" th:onsubmit="return searchUser(0);" class="btn btn-default">重置</button> -->
+<!--                                </form> -->
+                       </nav>
+                   </div>
+
+                    <div class="col-md-12">
+                        <table class="layui-table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="4%">ID</th>
+
+                                <th width="40%">Banner</th>
+                                <th width="15%">创建时间</th>
+<!--                                 <th width="10">状态</th> -->
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="target : ${pageInfo.list}">
+                                    <tr th:id="${target.id}">
+                                        <td>
+                                            <th:block th:text="${target.id}" />
+                                        </td>
+                                        <td>
+                                            <a th:onclick="'showImage(' + ${target.id} + ');'" data-toggle="modal" data-target="#editModal">
+                                                <image th:src="${target.image}"  style="width:170px;height: 100px;"/>
+                                            </a>
+                                        </td>
+
+                                        <td><th:block th:text="${T(com.jojo.recovery.utils.PageUtil).fmtdate(target.createTime)}"/></td>
+<!--                                         <td> -->
+<!--                                             <th:block th:if="${target.status == 0}"> -->
+<!--                                                 <span class="label label-default">待发布</span> -->
+<!--                                             </th:block> -->
+<!--                                            <th:block th:if="${target.status == 1}"> -->
+<!--                                                <span class="label label-info">已发布</span> -->
+<!--                                            </th:block> -->
+<!--                                         </td> -->
+
+                                        <td>
+
+<!--                                             <a th:onclick="'pushTarget(' + ${target.id} + ',' + ${target.status} + ');'" th:class="${target.status == 0}?'btn btn-primary btn-sm waves-effect waves-light m-b-5' : 'btn btn-warning btn-sm waves-effect waves-light m-b-5'"> -->
+<!--                                                 <i class="fa fa-edit"></i> <span th:text="${target.status == 0}? '发布': '下架'"></span> -->
+<!--                                             </a> -->
+                                            <a href="javascript:void(0)" th:onclick="'deleteTarget('+${target.id}+');'" class="btn btn-danger btn-sm waves-effect waves-light m-b-5">
+                                                <i class="fa fa-trash-o"></i> <span>删除</span>
+                                            </a>
+
+                                        </td>
+                                    </tr>
+                                </th:block>
+
+                            </tbody>
+                        </table>
+                        <div th:replace="index/comm/macros :: pageAdminNav(${pageInfo})"></div>
+                    </div>
+                </div>
+                <div th:replace="index/fragments/footer :: footer-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="index/fragments/footer :: footer"></div>
+<script type="text/javascript">
+    var tale = new $.tale();
+
+    $('#addModal').on('shown.bs.modal', function () {
+        $('#imgShow').attr('src', '');
+        $('#filed').val('')
+    })
+    $("#addModal").on("hidden.bs.modal", function() {
+        $('#imgShow').attr('src', '');
+        $('#filed').val('')
+    });
+
+    $("#editModal").on("hidden.bs.modal", function() {
+        $('#noticeContentEdit').attr('src', '');
+    });
+
+     //在input file内容改变的时候触发事件
+    $('#filed').change(function(){
+        //获取input file的files文件数组;
+        //$('#filed')获取的是jQuery对象，.get(0)转为原生对象;
+        //这边默认只能选一个，但是存放形式仍然是数组，所以取第一个元素使用[0];
+        var file = $('#filed').get(0).files[0];
+
+        uploadFile(file)
+    })
+
+    function uploadFile(fileObj) {
+// js 获取文件对象
+//         var fileObj = document.getElementById("file").files[0];
+// 接收上传文件的后台地址
+//         var url =  "http://localhost:8082" + "/admin/upload";
+        var url =  "https://jbl.ahwrxx.com/" + "/admin/upload";
+        var form = new FormData(); // FormData 对象
+        form.append("file", fileObj); // 文件对象
+
+        xhr = new XMLHttpRequest();  // XMLHttpRequest 对象
+        xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
+
+        xhr.onload = uploadComplete; //请求完成
+
+
+        xhr.onerror =  uploadFailed; //请求失败
+
+//             xhr.upload.onprogress = progressFunction;//【上传进度调用方法实现】
+//             xhr.upload.onloadstart = function(){//上传开始执行方法
+//                 ot = new Date().getTime();   //设置上传开始时间
+//                 oloaded = 0;//设置上传开始时，以上传的文件大小为0
+//             };
+
+        xhr.send(form); //开始上传，发送form数据
+    }
+    //上传成功响应
+
+    function uploadComplete(evt) {
+            //服务断接收完文件返回的结果
+            console.log('evt',evt)
+            var res = JSON.parse(evt.target.responseText);
+
+            if(res.code == 200) {
+
+                $('#imgShow').attr('src',res.data)
+                $('#bannerImage').val(res.data)
+            }else{
+                console.log(res)
+            }
+
+        }
+    //上传失败
+    function uploadFailed(evt) {
+        alert("上传失败！");
+    }
+
+    function addNotice() {
+        var image = $('#bannerImage').val()
+
+        tale.alertConfirm({
+            title: '确定添加？',
+            then: function () {
+                tale.post({
+                    url: '/admin/banner/insert',
+                    data: {
+                        image: image,
+                    },
+                    //是否预处理,默认值为true,这里改成false
+                　　 processData:false,
+
+                    //是否设置内容,默认值为true,这里改成false
+                　　 contentType:false,
+                    success: function (res) {
+                        if (res.code == 200) {
+                            tale.alertOkAndReload('添加成功');
+
+                        }else {
+                             tale.alertError(res.msg || '添加失败');
+                         }
+                    },
+                    error: function (res) {
+                        tale.alertError(res.msg || '添加失败');
+                    }
+                })
+            }
+        })
+
+
+
+    }
+
+// 公告详情
+    function showImage(id) {
+        console.log(id);
+        tale.get({
+            url: '/admin/banner/info',
+                data: {
+                    id: id
+                },
+                success: function (res) {
+                    if (res.code == 200) {
+                        console.log(res.id)
+//                         $('#noticeId').val(res.id);
+                        $('#noticeContentEdit').attr('src', res.data.image);
+                    }
+                },
+                error: function (res) {
+                    tale.alertError(res.msg || '操作失败');
+                }
+        })
+    }
+// 保存修改
+
+
+// 发布、下架
+    function pushTarget(id,status) {
+        var push = 0;
+        var title = '确认发布';
+        if (status == 0) {
+            push = 1;
+        } else {
+            push = 0
+            title = '确认下架';
+        }
+        tale.alertConfirm({
+            title: title,
+            then: function () {
+                tale.post({
+                    url: '/admin/banner/update',
+                    data: {
+                        id: id,
+                        status: push
+                    },
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+
+    function deleteTarget(id) {
+        tale.alertDelete({
+            title:'确定删除?',
+            then: function () {
+                tale.post({
+                    url : '/admin/banner/delete',
+                    data: {id: id},
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('删除成功');
+                        } else {
+                            tale.alertError(result.msg || '删除失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '删除失败');
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

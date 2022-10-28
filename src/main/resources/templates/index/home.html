@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='首页',active='home'">
+<header th:replace="index/fragments/header::headerFragment(${title},${active})"></header>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="index/fragments/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h4 class="page-title">首页</h4>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="mini-stat clearfix bg-success bx-shadow">
+                                <span class="mini-stat-icon">
+                                    <i class="fa fa-thumbs-o-up" baria-hidden="true"></i>
+                                </span>
+                                <div class="mini-stat-info text-right">
+                                    订单量：<span class="counter" th:text="${orderNum}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${session.admin.role} eq 1" class="col-sm-6 col-lg-3">
+                            <div class="mini-stat clearfix bg-primary  bx-shadow">
+                                <span class="mini-stat-icon">
+                                    <i class="fa fa-file" baria-hidden="true"></i>
+                                </span>
+                                <div class="mini-stat-info text-right">
+                                    用户量：<span class="counter" th:text="${userNum}"></span>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+                <div th:replace="index/fragments/footer :: footer-content"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="index/fragments/footer :: footer"></div>
+<script>
+</script>
+</body>
+</html>

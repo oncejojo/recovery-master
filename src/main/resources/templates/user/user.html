@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='用户列表',active='user'">
+<header th:replace="index/fragments/header::headerFragment(${title},${active})"></header>
+<style>
+    .navbar-form-j {
+        border: none;
+        box-shadow: none;
+        padding-left: 10px !important;
+    }
+</style>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="index/fragments/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+
+<!--           编辑modal           -->
+                    <div class="modal fade" id="editModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form role="form"  id="editUserForm">
+                                            <div class="form-group col-md-6">
+                                                 <label for="exampleInputEmail1">经济人</label>
+                                                 <input id="editUserId" name="id" value="" hidden type="text" />
+                                                 <input id="editUsername" type="text" value="" placeholder="" name="username"  class="form-control" disabled/>
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                  <label for="exampleInputEmail1">手机号</label>
+                                                  <input id="editPhone" type="text" value="" placeholder="" name="phone"  class="form-control" disabled/>
+                                             </div>
+
+                                            <div class="form-group col-md-6">
+                                                 <label for="exampleInputEmail1">金额</label>
+                                                 <input id="editMoney" type="number" value="" placeholder="请输入奖励金额" name="money"  class="form-control" />
+                                            </div>
+
+                                        </form>
+                                     </div>
+                                </div>
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return newBalance();">保存</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="view">
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+
+                                <form class="navbar-form navbar-left searchForm" role="search" style="margin: 17px 17px" id="">
+                                    <div class="form-group">
+                                        <input id="checkOne" type="text" class="form-control" value="" name="username" placeholder="请输入用户名称">
+                                        <input id="checkTwo" type="text" class="form-control" value="" name="phone" placeholder="请输入用户电话">
+                                        <input id="checkThree" type="hidden" class="form-control" value="" name="role" placeholder="请输入用户名称">
+                                        <input id="checkFour" type="hidden" class="form-control" value="" name="status" placeholder="请输入用户名称">
+                                    </div>
+                                    <button type="submit" th:onclick="return searchTable('search');" class="btn btn-info">查询</button>
+                                    <button type="submit" th:onclick="return searchTable('reset');" class="btn btn-default">重置</button>
+                                </form>
+                        </nav>
+                    </div>
+
+                    <div class="col-md-12">
+                        <table class="layui-table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="6%">ID</th>
+                                <th width="10%">名称</th>
+                                <th width="15%">电话</th>
+                                <th width="10%">余额</th>
+
+                                <th width="20%">创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="target : ${pageInfo.list}">
+                                    <tr th:id="${target.id}">
+                                        <td>
+                                            <th:block th:text="${target.id}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.username}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.phone} " />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.money} + '￥' " />
+                                        </td>
+
+
+                                        <td><th:block th:text="${#dates.format(target.createTime, 'yyyy-MM-dd HH:mm:ss')}"/></td>
+
+
+                                        <td>
+
+<!--     			                            <a id="modal-user"  role="button" -->
+<!--     			                                class="btn btn-primary btn-sm waves-effect waves-light m-b-5" th:onclick="'getUser('+${target.id}+');'"  data-toggle="modal" data-target="#addModal">编辑</a> -->
+
+
+
+                                            <a href="javascript:void(0)" th:onclick="'deleteUser('+${target.id}+');'"  class="btn btn-danger btn-sm waves-effect waves-light m-b-5">
+                                                <i class="fa fa-trash-o"></i> <span>删除</span>
+                                            </a>
+
+                                        </td>
+                                    </tr>
+                                </th:block>
+
+                            </tbody>
+                        </table>
+                        <div th:replace="index/comm/macros :: pageAdminParam(${pageInfo},${searchParams})"></div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="index/fragments/footer :: footer"></div>
+<script type="text/javascript">
+    var tale = new $.tale();
+
+    function selectOnchange(option) {
+        console.log('s',option.value)
+        $('#checkThree').val(option.value)
+    }
+    function selectTypeOnchange(option) {
+            console.log('s',option.value)
+            $('#checkFour').val(option.value)
+        }
+
+    function searchTable(option){
+        var data = {};
+        if (option == "search") {
+            data = $(".searchForm").serialize();
+            console.log(data)
+        }
+        if (option == "reset") {
+            $('#checkOne').val('');
+            $('#checkTwo').val('');
+            $('#checkThree').val(-1);
+            $('#checkFour').val(-1);
+            $('#checkRole').val(-1);
+            $('#checkStatus').val(-1)
+            data = {}
+        }
+
+        $.ajax({
+            url: '/admin/user',
+            type: 'GET',
+            data: data,
+            dataType: 'json',
+            success: function (result) {
+                console.log('success')
+            }
+        })
+    }
+
+
+    $('#modal-container-user').on('show.bs.modal', function (e) {
+        console.log('open');
+    })
+
+    $('#addModal').on('shown.bs.modal', function () {
+            $('#addUserName').focus()
+            $('#searchManagerPhone').val('');
+    })
+
+    $("#addModal").on("hidden.bs.modal", function() {
+        $('#addUserForm')[0].reset();
+        $('#searchManagerPhone').val('');
+        $('#managerTable').attr('style', 'display: none')
+    });
+
+    function editUser() {
+        tale.alertConfirm({
+            title: '确认修改？',
+            then: function () {
+                tale.post({
+                    url: '/admin/user/update',
+                    data: {
+                        id: $('#editUserId').val(),
+                        username: $('#addUserName').val(),
+                        phone: $('#addUserPhone').val(),
+                        role: $('#userRole').val(),
+
+                    },
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+
+
+//删除
+    function deleteUser(id) {
+        tale.alertDelete({
+            title:'确定删除该用户吗?',
+            then: function () {
+                tale.post({
+                    url : '/admin/user/delete',
+                    data: {id: id},
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('删除成功');
+                        } else {
+                            tale.alertError(result.msg || '删除失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

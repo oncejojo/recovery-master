@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='箱体状态',active='box'">
+<header th:replace="index/fragments/header::headerFragment(${title},${active})"></header>
+<style>
+    .navbar-form-j {
+        border: none;
+        box-shadow: none;
+        padding-left: 10px !important;
+    }
+</style>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="index/fragments/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+<!--           Add modal           -->
+                    <div class="modal fade" id="addModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form role="form"  id="editUserForm">
+                                            <div class="form-group col-md-12">
+                                                 <label for="exampleInputEmail1">名称</label>
+                                                 <input id="boxName" type="text" value="" placeholder="" name="name"  class="form-control" />
+                                            </div>
+                                            <div class="form-group col-md-12">
+                                                 <label for="exampleInputEmail1">设备号</label>
+                                                 <input id="boxCode" type="text" value="" placeholder="" name="code"  class="form-control" />
+                                            </div>
+                                            <div class="form-group col-md-12">
+                                                 <label for="exampleInputEmail1">位置</label>
+                                                 <input id="boxAddress" type="text" value="" placeholder="" name="address"  class="form-control" />
+                                            </div>
+                                        </form>
+                                     </div>
+                                </div>
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return addTarget();">保存</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+<!--           编辑modal           -->
+                    <div class="modal fade" id="editModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form role="form"  id="editUserForm">
+                                            <div class="form-group col-md-12">
+                                                 <label for="exampleInputEmail1">类型</label>
+                                                 <input id="targetId" name="id" value="" hidden type="text" />
+                                                 <input id="targetName" type="text" value="" placeholder="" name="name"  class="form-control" />
+                                            </div>
+                                            <div class="form-group col-md-12">
+                                                 <label for="exampleInputEmail1">价格</label>
+                                                 <input id="targetPrice" type="number" value="" placeholder="" name="code"  class="form-control" />
+                                            </div>
+
+                                        </form>
+                                     </div>
+                                </div>
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return editTarget();">保存</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="view">
+                        <nav class="navbar navbar-default" role="navigation">
+<!--                             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"> -->
+<!--                                 <ul class="nav navbar-nav"> -->
+<!--                                    <li class="active"> -->
+<!--                                        <a data-toggle="modal" data-target="#addModal">新增</a> -->
+<!--                                    </li> -->
+<!--                                 </ul> -->
+
+<!--                                 <form class="navbar-form navbar-left searchForm" role="search" style="margin: 17px 17px" id=""> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <input id="checkOne" type="text" class="form-control" value="" name="name" placeholder="请输入箱体名称"> -->
+<!--                                     </div> -->
+<!--                                     <button type="submit" th:onclick="return searchTable('search');" class="btn btn-info">查询</button> -->
+<!--                                     <button type="submit" th:onclick="return searchTable('reset');" class="btn btn-default">重置</button> -->
+<!--                                 </form> -->
+<!--                             </dvi> -->
+                        </nav>
+                    </div>
+
+                    <div class="col-md-12">
+                        <table class="layui-table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="6%">ID</th>
+                                <th width="10%">类型</th>
+                                <th width="15%">重量</th>
+                                <th width="15%">状态</th>
+                                <th width="20%">更新时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="target : ${pageInfo.list}">
+                                    <tr th:id="${target.id}">
+                                        <td>
+                                            <th:block th:text="${target.id}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.bucketName}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.weight} + ' KG' " />
+                                        </td>
+                                        <td>
+                                            <th:block th:if="${target.fullValue == 0}">
+                                                <span class="label label-success">未满</span>
+                                            </th:block>
+
+                                           <th:block th:if="${target.fullValue == 1}">
+                                               <span class="label label-danger">满溢</span>
+                                           </th:block>
+                                        </td>
+
+                                        <td><th:block th:text="${#dates.format(target.updateTime, 'yyyy-MM-dd HH:mm:ss')}"/></td>
+
+
+                                        <td>
+<!--     			                            <a id="modal-user"  role="button" -->
+<!--     			                                class="btn btn-primary btn-sm waves-effect waves-light m-b-5" th:onclick="'getInfo('+${target.id}+');'"  data-toggle="modal" data-target="#editModal">编辑</a> -->
+
+<!--                                             <a href="javascript:void(0)" th:onclick="'deleteTarget('+${target.id}+');'"  class="btn btn-danger btn-sm waves-effect waves-light m-b-5"> -->
+<!--                                                 <i class="fa fa-trash-o"></i> <span>删除</span> -->
+<!--                                             </a> -->
+                                        </td>
+                                    </tr>
+                                </th:block>
+
+                            </tbody>
+                        </table>
+                        <div th:replace="index/comm/macros :: pageAdminParam(${pageInfo},${searchParams})"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="index/fragments/footer :: footer"></div>
+<script type="text/javascript">
+    var tale = new $.tale();
+
+    function selectOnchange(option) {
+        console.log('s',option.value)
+        $('#checkThree').val(option.value)
+    }
+    function selectTypeOnchange(option) {
+            console.log('s',option.value)
+            $('#checkFour').val(option.value)
+        }
+
+    function searchTable(option){
+        var data = {};
+        if (option == "search") {
+            data = $(".searchForm").serialize();
+            console.log(data)
+        }
+        if (option == "reset") {
+            $('#checkOne').val('');
+            $('#checkTwo').val('');
+            $('#checkThree').val(-1);
+            $('#checkFour').val(-1);
+            $('#checkRole').val(-1);
+            $('#checkStatus').val(-1)
+            data = {}
+        }
+
+        $.ajax({
+            url: '/admin/bucket',
+            type: 'GET',
+            data: data,
+            dataType: 'json',
+            success: function (result) {
+                console.log('success')
+            }
+        })
+    }
+
+    $('#addModal').on('shown.bs.modal', function () {
+        $('#boxName').val('')
+        $('#boxAddress').val('');
+    })
+
+    $("#addModal").on("hidden.bs.modal", function() {
+        $('#boxName').val('')
+        $('#boxAddress').val('');
+    });
+
+    function getInfo(id) {
+        tale.get({
+            url: '/admin/bucket/info',
+            data: {
+                id: id
+            },
+            success: function(res) {
+                $('#targetId').val(res.data.id)
+                $('#targetName').val(res.data.name)
+                $('#targetPrice').val(res.data.price)
+            }
+        })
+    }
+
+
+    function editTarget() {
+        tale.alertConfirm({
+            title: '确认修改？',
+            then: function () {
+                tale.post({
+                    url: '/admin/bucket/update',
+                    data: {
+                        id: $('#targetId').val(),
+                        name: $('#targetName').val(),
+                        price: $('#targetPrice').val(),
+                    },
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+//  生成二维码
+    function createCode(id) {
+        tale.alertConfirm({
+            title:'确认生成?',
+            then: function () {
+                tale.post({
+                    url : '/api/server/code',
+                    data: {id: id},
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                });
+            }
+        });
+    }
+
+//删除
+    function deleteTarget(id) {
+        tale.alertDelete({
+            title:'确认删除?',
+            then: function () {
+                tale.post({
+                    url : '/admin/box/delete',
+                    data: {id: id},
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('删除成功');
+                        } else {
+                            tale.alertError(result.msg || '删除失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='提现列表',active='balance'">
+<header th:replace="index/fragments/header::headerFragment(${title},${active})"></header>
+<style>
+    .navbar-form-j {
+        border: none;
+        box-shadow: none;
+        padding-left: 10px !important;
+    }
+</style>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="index/fragments/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+<!--      新增modal         -->
+                    <div class="modal fade" id="addModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content " >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form role="form"  id="addForm">
+                                            <div class="form-group  col-md-6">
+                                                 <label for="exampleInputEmail1">名称</label>
+                                                 <input id="addUsername" placeholder="请输入名称" type="text" value="" name="name"  class="form-control"/>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return insertRecord();">保存</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+<!--           编辑modal           -->
+                    <div class="modal fade" id="editModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form role="form"  id="editForm">
+                                            <div class="form-group col-md-6">
+                                                 <label for="exampleInputEmail1">名称</label>
+                                                 <input id="editUserId" name="id" value="" hidden type="text" />
+                                                 <input id="editUsername" type="text" value="" placeholder="" name="name"  class="form-control" />
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                  <label for="exampleInputEmail1">图标</label>
+                                                  <input id="editPhone" type="text" value="" placeholder="" name="image"  class="form-control" />
+                                             </div>
+
+
+                                        </form>
+                                     </div>
+                                </div>
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return updateRecord();">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="view">
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+<!--                                 <ul class="nav navbar-nav"> -->
+<!--                                    <li class="active"> -->
+<!--                                        <a data-toggle="modal" data-target="#addModal" >新增</a> -->
+<!--                                    </li> -->
+<!--                                 </ul> -->
+                                <form class="navbar-form navbar-left searchForm" role="search" style="margin: 17px 17px" id="">
+                                    <div class="form-group">
+
+                                        <input id="checkOne" type="text" class="form-control" value="" name="username" placeholder="请输入用户名">
+                                        <input id="checkTwo" type="text" class="form-control" value="" name="phone" placeholder="请输入账号">
+                                    </div>
+                                    <button type="submit" th:onclick="return searchTable('search');" class="btn btn-info">查询</button>
+                                    <button type="submit" th:onclick="return searchTable('reset');" class="btn btn-default">重置</button>
+                                </form>
+                        </nav>
+                    </div>
+
+                    <div class="col-md-12">
+                        <table class="layui-table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="6%">ID</th>
+
+                                <th width="8%">用户</th>
+                                <th width="15%">账号</th>
+                                <th width="8%">金额</th>
+                                <th width="8%">状态</th>
+                                <th width="20%">创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="target : ${pageInfo.list}">
+                                    <tr th:id="${target.id}">
+                                        <td>
+                                            <th:block th:text="${target.id}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.username}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.phone} " />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.money} + '￥' ">
+                                            </block>
+                                        </td>
+                                        <td>
+                                            <th:block th:if="${target.status == 0}">
+                                                <span class="label label-info">待处理</span>
+                                            </th:block>
+
+                                           <th:block th:if="${target.status == 1}">
+                                               <span class="label label-success">已完成</span>
+                                           </th:block>
+                                           <th:block th:if="${target.status == 2}">
+                                              <span class="label label-danger">已撤销</span>
+                                          </th:block>
+                                        </td>
+                                        <td><th:block th:text="${T(com.jojo.recovery.utils.PageUtil).fmtdate(target.createTime)}"/></td>
+
+
+                                        <td>
+
+<!--     			                            <a id="modal-user"  role="button" -->
+<!--     			                                class="btn btn-primary btn-sm waves-effect waves-light m-b-5" th:onclick="'getInfo('+${target.id}+');'"  data-toggle="modal" data-target="#editModal">复制</a> -->
+                                            <a th:if="${target.status == 0}" role="button"
+                                                class="btn btn-primary btn-sm waves-effect waves-light m-b-5" th:onclick="'updateStatus('+${target.id}+');'">处理</a>
+
+                                            <a th:if="${target.status == 0}" href="javascript:void(0)" th:onclick="'deleteUser('+${target.id}+');'"  class="btn btn-danger btn-sm waves-effect waves-light m-b-5">
+                                                <i class="fa fa-trash-o"></i> <span>撤销</span>
+                                            </a>
+
+                                        </td>
+                                    </tr>
+                                </th:block>
+
+                            </tbody>
+                        </table>
+                        <div th:replace="index/comm/macros :: pageAdminParam(${pageInfo},${searchParams})"></div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="index/fragments/footer :: footer"></div>
+<script type="text/javascript">
+    var tale = new $.tale();
+
+    function selectOnchange(option) {
+        console.log('s',option.value)
+        $('#checkThree').val(option.value)
+    }
+    function selectTypeOnchange(option) {
+            console.log('s',option.value)
+            $('#checkFour').val(option.value)
+        }
+
+    function searchTable(option){
+        var data = {};
+        if (option == "search") {
+            data = $(".searchForm").serialize();
+            console.log(data)
+        }
+        if (option == "reset") {
+            $('#checkOne').val('');
+            $('#checkTwo').val('');
+            $('#checkThree').val(-1);
+            $('#checkFour').val(-1);
+            $('#checkRole').val(-1);
+            $('#checkStatus').val(-1)
+            data = {}
+        }
+
+        $.ajax({
+            url: '/admin/balance',
+            type: 'GET',
+            data: data,
+            dataType: 'json',
+            success: function (result) {
+                console.log('success')
+            }
+        })
+    }
+
+
+
+
+    function getInfo(id) {
+        tale.get({
+            url: '/admin/level/info',
+            data: {
+                id: id
+            },
+            success: function(res) {
+//                 console.log(data)
+                var data = res.data
+                $('#editUsername').val(data.name)
+                $('#editPhone').val(data.image)
+
+            }
+        })
+    }
+
+    function updateStatus(id) {
+        tale.alertConfirm({
+            title: '确认已处理？',
+            then: function () {
+                tale.post({
+                    url: '/admin/balance/update',
+                    data: {
+                        id: id,
+                        status: 1
+                    },
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+
+    function insertRecord() {
+        tale.alertConfirm({
+            title: '确认添加?',
+            then: function () {
+                tale.post({
+                    url: '/admin/level/insert',
+                    data: $('#addForm').serialize(),
+                    success: function (res) {
+                        if(res.code == 200) {
+                            if(res.code == 200){
+                                tale.alertOkAndReload('操作成功');
+                            } else {
+                                tale.alertError(result.msg || '操作失败');
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    }
+    function updateRecord() {
+        tale.alertConfirm({
+            title: '确认修改？',
+            then: function () {
+                tale.post({
+                    url: '/admin/level/update',
+                    data: $("#editForm").serialize(),
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+
+
+
+
+    $('#modal-container-user').on('show.bs.modal', function (e) {
+        console.log('open');
+    })
+
+    $('#addModal').on('shown.bs.modal', function () {
+            $('#addUserName').focus()
+            $('#searchManagerPhone').val('');
+    })
+
+    $("#addModal").on("hidden.bs.modal", function() {
+        $('#addUserForm')[0].reset();
+        $('#searchManagerPhone').val('');
+        $('#managerTable').attr('style', 'display: none')
+    });
+
+    function editUser() {
+        tale.alertConfirm({
+            title: '确认修改？',
+            then: function () {
+                tale.post({
+                    url: '/admin/user/update',
+                    data: {
+                        id: $('#editUserId').val(),
+                        username: $('#addUserName').val(),
+                        phone: $('#addUserPhone').val(),
+                        role: $('#userRole').val(),
+
+                    },
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+
+
+//删除
+    function deleteUser(id) {
+        tale.alertDelete({
+            title:'确定撤销?',
+            then: function () {
+                tale.post({
+                    url : '/admin/balance/update',
+                    data: {
+                        id: id,
+                        status: 2
+                    },
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

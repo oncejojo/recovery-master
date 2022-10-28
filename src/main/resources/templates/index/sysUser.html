@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:with="title='管理员列表',active='sysUser'">
+<header th:replace="index/fragments/header::headerFragment(${title},${active})"></header>
+<body class="fixed-left">
+<div id="wrapper">
+    <div th:replace="index/fragments/header::header-body"></div>
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                <div class="row">
+<!--      新增modal         -->
+                    <div class="modal fade" id="addModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form role="form"  id="addUserForm">
+                                            <div class="form-group " style="margin: 0px 10px 0 10px">
+                                                 <label for="exampleInputEmail1">用户名</label>
+                                                 <input id="addUserName" placeholder="请输入用户名" type="text"
+                                                    value="" name="username"  class="form-control" required="required"/>
+                                            </div>
+                                            <div class="form-group" style="margin: 10px 10px">
+                                                 <label for="exampleInputEmail1">密码</label>
+                                                 <input id="addPassword" placeholder="请输入密码" type="password"
+                                                  value="" name="password"  class="form-control" required/>
+                                            </div>
+                                            <div class="form-group " style="margin: 0px 10px 0 10px">
+                                                 <label for="exampleInputEmail1">代理</label>
+                                                 <input id="addRemarks" placeholder="请输入代理名称" type="text"
+                                                    value="" name="remarks"  class="form-control" required/>
+                                            </div>
+
+                                        </form>
+                                     </div>
+                                </div>
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return addUser();">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+<!--      修改modal         -->
+                    <div class="modal fade" id="editModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" >
+                                <div class="modal-body">
+                                    <div class="col-md-12 column">
+                                        <form role="form"  id="editUserForm">
+                                            <input id="editUserId" placeholder="请输入用户名" type="hidden"
+                                                                value="" name="id"  class="form-control" required/>
+                                            <div class="form-group " >
+                                                 <label for="exampleInputEmail1">用户名</label>
+                                                 <input id="editUserName" placeholder="请输入用户名" type="text"
+                                                    value="" name="username"  class="form-control" required/>
+                                            </div>
+                                            <div class="form-group" >
+                                                 <label for="exampleInputEmail1">修改密码</label>
+                                                 <input id="editPassword" placeholder="请输入新密码" type="password"
+                                                  value="" name="password"  class="form-control" required/>
+                                            </div>
+                                            <div id="chooseShop" class="form-group " >
+                                                 <label for="exampleInputEmail1">代理</label>
+                                                 <input id="editRemarks" placeholder="请输入代理名称" type="text"
+                                                    value="" name="remarks"  class="form-control" required/>
+                                            </div>
+                                        </form>
+                                     </div>
+                                </div>
+                                <div class="modal-footer">
+                                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                     <button type="button" class="btn btn-primary" onclick="return editUser();">保存</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="view">
+                        <nav class="navbar navbar-default" role="navigation">
+                            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                                <ul class="nav navbar-nav">
+                                    <li class="active">
+                                        <a href="#" data-toggle="modal" data-target="#addModal">新增</a>
+                                    </li>
+<!--                                     <li class="select"> -->
+<!--                                         <select id="userRole caret" class="form-control" style="margin-top: 17px" name="" onchange="selectOnchange(this)" aria-label="Default select example"> -->
+<!--                                             <option selected value="0">按用户名称查询</option> -->
+<!--                                             <option value="1">按用户电话查询</option> -->
+<!--                                         </select> -->
+<!--                                     </li> -->
+
+                                </ul>
+<!--                                 <form class="navbar-form navbar-left" role="search" style="margin: 17px 17px" id="searchForm"> -->
+<!--                                     <div class="form-group"> -->
+<!--                                         <input id="checkOne" type="text" class="form-control" value="" name="username" placeholder="请输入用户名称"> -->
+<!--                                         <input id="checkTwo" type="hidden" class="form-control" value="" name="phone" placeholder="请输入用户电话"> -->
+<!--                                     </div> -->
+<!--                                     <button type="submit" th:onclick="return searchTable('search');" class="btn btn-info">查询</button> -->
+<!--                                     <button type="submit" th:onclick="return searchTable('reset');" class="btn btn-default">重置</button> -->
+<!--                                 </form> -->
+                        </nav>
+                    </div>
+
+                    <div class="col-md-12">
+                        <table class="layui-table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th width="6%">ID</th>
+                                <th width="20%">账号</th>
+                                <th width="20%">代理</th>
+                                <th width="10%">类型</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <th:block th:each="target : ${pageInfo.list}">
+                                    <tr th:id="${target.id}">
+                                        <td>
+                                            <th:block th:text="${target.id}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.username}" />
+                                        </td>
+                                        <td>
+                                            <th:block th:text="${target.remarks}" />
+                                        </td>
+                                         <td>
+                                            <th:block th:if="${target.role == 1}">
+                                                <span class="label label-info">总管理员</span>
+                                            </th:block>
+                                            <th:block th:if="${target.role == 2}">
+                                               <span class="label label-success">代理</span>
+                                            </th:block>
+                                        </td>
+
+                                        <td>
+                                            <a th:if="${session.admin.role} eq 1" th:onclick="'checkTarget(' + ${target.id} + ')'" data-toggle="modal" data-target="#editModal" class="btn btn-danger btn-sm waves-effect waves-light m-b-5">
+                                                    <i class="fa fa-trash-o"></i> <span>编辑</span>
+                                                </a>
+                                            <a th:if="${target.role != 1}" href="javascript:void(0)" th:onclick="'deleteTarget('+${target.id}+');'"  class="btn btn-danger btn-sm waves-effect waves-light m-b-5">
+                                                <i class="fa fa-trash-o"></i> <span>删除</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </th:block>
+
+                            </tbody>
+                        </table>
+                        <div th:replace="index/comm/macros :: pageAdminNav(${pageInfo})"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="index/fragments/footer :: footer"></div>
+<script type="text/javascript">
+    var tale = new $.tale();
+
+//     table 按条件查询
+    function checkOptions(option) {
+        console.log(option)
+        if (option == 'name'){
+            $("#checkName").get(0).setAttribute("type", "text");
+            $("#checkPhone").get(0).setAttribute("type", "hidden");
+        } else {
+            $("#checkName").get(0).setAttribute("type","hidden");
+            $("#checkPhone").get(0).setAttribute("type", "phone");
+        }
+    }
+
+    function selectOnchange(obj) {
+        var value = obj.value
+        if (value == 0){
+            $("#checkOne").get(0).setAttribute("type", "text");
+            $("#checkTwo").val('');
+            $("#checkTwo").get(0).setAttribute("type", "hidden");
+        } else {
+            $("#checkOne").get(0).setAttribute("type","hidden");
+            $("#checkOne").val('');
+            $("#checkTwo").get(0).setAttribute("type", "phone");
+        }
+    }
+
+    function searchTable(option){
+        var data = {};
+        if (option == "search") {
+            data = $("#searchForm").serialize();
+            console.log('search')
+        }
+        if (option == "reset") {
+            $('#checkOne').val('');
+            $('#checkTwo').val('');
+            data = {
+                username: '',
+                phone: ''
+            }
+        }
+
+        $.ajax({
+            url: '/admin/user',
+            type: 'GET',
+            data: data,
+            dataType: 'json',
+            success: function (result) {
+                console.log('success')
+            }
+        })
+    }
+//     用户详情
+    function checkTarget(id) {
+        console.log(id + "id");
+        $.ajax({
+            url: '/admin/sysUser/info',
+            type: 'GET',
+            data: {id: id},
+            dataType: 'json',
+            success: function (result) {
+                let data = result.data;
+                $('#editUserName').val(data.username);
+                $("#editUserId").val(data.id)
+                $("#editPassword").val(data.password);
+                $("#editRemarks").val(data.remarks);
+                if(data.role == 1){
+                    $("#chooseShop").attr('style','display: none');
+                }else{
+                    $("#chooseShop").attr('style','');
+                }
+            },
+            error: function () {
+                //
+            }
+        })
+
+    }
+
+    function editUser() {
+        tale.alertConfirm({
+            title: '确认修改？',
+            then: function () {
+                tale.post({
+                    url: '/admin/sysUser/update',
+                    data: $("#editUserForm").serialize(),
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+
+    $('#modal-container-user').on('show.bs.modal', function (e) {
+        console.log('open');
+    })
+
+    $('#addModal').on('shown.bs.modal', function () {
+            $('#addUserName').focus()
+    })
+
+    $("#addModal").on("hidden.bs.modal", function() {
+         document.getElementById("addUserForm").reset();
+    });
+    $("#addModal").on("shown.bs.modal", function() {
+         document.getElementById("addUserForm").reset();
+    });
+
+// 后台添加指定用户
+    function addUser() {
+
+        tale.alertConfirm({
+            title: '确认添加？',
+            then: function () {
+                tale.post({
+                    url: '/admin/sysUser/insert',
+                    data: {
+                        username: $("#addUserName").val(),
+                        password: $("#addPassword").val(),
+                        remarks: $("#addRemarks").val(),
+                        role: 2
+                    },
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('操作成功');
+                        } else {
+                            tale.alertError(result.msg || '操作失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                })
+            }
+        })
+    }
+
+
+//删除
+    function deleteTarget(id) {
+        tale.alertDelete({
+            title:'确定删除该管理员吗?',
+            then: function () {
+                tale.post({
+                    url : '/admin/sysUser/delete',
+                    data: {id: id},
+                    success: function (result) {
+                        if(result.code == 200){
+                            tale.alertOkAndReload('删除成功');
+                        } else {
+                            tale.alertError(result.msg || '删除失败');
+                        }
+                    },
+                    error: function (e) {
+                        tale.alertError(e.msg || '操作失败');
+                    }
+                });
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

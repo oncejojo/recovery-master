@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerFragment(title,active)">
+    <meta charset="utf-8"/>
+    <title><th:block th:text="${title!=null?title:'后台管理'}+'- 金宝莱回收'"></th:block></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta content="Coderthemes" name="author"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link rel="shortcut icon" th:href="@{/images/logowr.png}"/>
+    <link th:href="@{//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{//cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/style.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{//cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{//www.layuicdn.com/layui-v2.6.8/css/layui.css}" type="text/css">
+    <style>
+        .username {
+            color: #333;
+            font-size: 15px;
+        }
+        .profile .username:hover {
+            color: rgb(45, 140, 240);
+        }
+    </style>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+<div th:fragment="header-body">
+<div class="topbar">
+    <div class="topbar-left">
+        <div class="text-center p-t-10" style="margin: 0 auto;">
+            <div class="pull-left" style="padding-left: 10px;">
+                <a th:href="@{/admin/home}">
+                    <img th:src="@{/images/logowr.png}" width="50" height="50"/>
+                </a>
+            </div>
+            <div class="pull-left" style="padding-left: 4px;">
+                <span style="font-size: 28px; color: #2f353f; line-height: 50px;">金宝莱回收</span>
+            </div>
+        </div>
+    </div>
+    <div class="navbar navbar-default" role="navigation">
+        <div class="container">
+            <div class="">
+                <div class="pull-left">
+                    <button type="button" class="button-menu-mobile open-left">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <span class="clearfix"></span>
+                </div>
+
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    <li class="dropdown">
+                        <a th:href="@{index.html}" class="dropdown-toggle profile" data-toggle="dropdown" aria-expanded="true">
+                            <span class="username" th:text="${session.admin} != null?${session.admin.remarks}:'管理员'"></span><span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+<!--                             <li><a th:href="@{/admin/sysUser/edit}"><i class="fa fa-sun-o"></i> 管理账号</a></li> -->
+                            <li><a th:href="@{/admin/logout}"><i class="fa fa-sign-out"></i> 注销</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="left side-menu">
+    <div class="sidebar-inner slimscrollleft">
+        <div id="sidebar-menu">
+            <ul>
+                <li th:class="${active}=='home'?'active':''">
+                    <a th:href="@{/admin/home}"
+                       th:class="${active}=='home'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-dashboard" aria-hidden="true"></i><span> 首页 </span></a>
+                </li>
+                <li th:if="${session.admin.role} eq 1" th:class="${active}=='banner'?'active':''">
+                    <a th:href="@{/admin/banner}"
+                       th:class="${active}=='banner'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> Banner列表 </span></a>
+                </li>
+                <li th:if="${session.admin.role} eq 1" th:class="${active}=='article'?'active':''">
+                    <a th:href="@{/admin/article}"
+                       th:class="${active}=='article'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> 文章列表 </span></a>
+                </li>
+                <li th:class="${active}=='order'?'active':''">
+                    <a th:href="@{/admin/order}"
+                       th:class="${active}=='order'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> 订单列表 </span></a>
+                </li>
+                <li th:if="${session.admin.role} eq 1" th:class="${active}=='balance'?'active':''">
+                    <a th:href="@{/admin/balance}"
+                       th:class="${active}=='balance'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> 提现列表 </span></a>
+                </li>
+                <li th:if="${session.admin.role} eq 1" th:class="${active}=='user'?'active':''">
+                    <a th:href="@{/admin/user}"
+                       th:class="${active}=='user'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> 用户列表 </span></a>
+                </li>
+                <li th:class="${active}=='box'?'active':''">
+                    <a th:href="@{/admin/box}"
+                       th:class="${active}=='box'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> 箱体列表 </span></a>
+                </li>
+                <li th:if="${session.admin.role} eq 1" th:class="${active}=='bucket'?'active':''">
+                    <a th:href="@{/admin/bucket}"
+                       th:class="${active}=='bucket'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> 价格设置 </span></a>
+                </li>
+                <li th:class="${active}=='href'?'active':''">
+                    <a href="https://i.ys7.com/camera/cameraAction!goLiveVideoPage.action"
+                       th:class="${active}=='href'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-list" aria-hidden="true"></i><span> 回收箱监控 </span></a>
+                </li>
+                <li th:if="${session.admin.role} eq 1" th:class="${active}=='sysUser'?'active':''">
+                    <a th:href="@{/admin/sysUser}"
+                       th:class="${active}=='sysUser'?'waves-effect active':'waves-effect'"><i
+                            class="fa fa-user" aria-hidden="true"></i><span> 管理员列表 </span></a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+</div>
+</html>
