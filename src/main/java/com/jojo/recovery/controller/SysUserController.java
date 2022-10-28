@@ -7,7 +7,6 @@ import com.jojo.recovery.common.enums.JsonResultEnum;
 import com.jojo.recovery.common.exception.JsonException;
 import com.jojo.recovery.model.SysUser;
 import com.jojo.recovery.model.Page;
-import com.jojo.recovery.service.BoxService;
 import com.jojo.recovery.service.SysUserService;
 import com.jojo.recovery.utils.MD5Util;
 import com.jojo.recovery.utils.PageUtil;
@@ -35,8 +34,7 @@ import java.util.Objects;
 public class SysUserController {
     @Resource
     SysUserService sysUserService;
-    @Resource
-    BoxService boxService;
+
 
 
     @PostMapping("/sysUser/insert")
