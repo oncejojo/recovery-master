@@ -15,7 +15,6 @@ import java.util.Map;
 @RequestMapping("/api/wx")
 @Slf4j
 public class TemplateMsgController {
-
     @RequestMapping("/template")
     public String sendTemplateMsg() {
         // openId代表一个唯一微信用户，即微信消息的接收人
@@ -44,7 +43,7 @@ public class TemplateMsgController {
          * {{remark.DATA}}
          */
         Map<String, WeChatTemplateMsg> sendMsg = new HashMap<>();
-        sendMsg.put("first", new WeChatTemplateMsg("结果通知"));
+        sendMsg.put("first", new WeChatTemplateMsg("检测结果通知"));
         sendMsg.put("keyword1", new WeChatTemplateMsg("orderId"));
         sendMsg.put("keyword2", new WeChatTemplateMsg("brandName"));
         sendMsg.put("keyword3", new WeChatTemplateMsg("price"));
@@ -53,6 +52,7 @@ public class TemplateMsgController {
         Map<String, Object> sendBody = new HashMap<>();
         sendBody.put("touser", openId);
         sendBody.put("url", navigateUrl);
+        sendBody.put("topcolor", "#fff000");
         sendBody.put("data", sendMsg);
         sendBody.put("template_id", templateId);
         RestTemplate restTemplate = new RestTemplate();
@@ -61,7 +61,7 @@ public class TemplateMsgController {
         String code = jsonObject.getString("errcode");
         String msgId = jsonObject.getString("msgid");
         log.info("code:" + code + "msgId:" + msgId);
-
         return entity.getBody();
+
     }
 }

@@ -8,8 +8,9 @@ import com.jojo.recovery.utils.HttpInterface;
 public class GetToken {
     private static String Token = "11_Rwf_vNCLoGB2NyalxsEyyMLs67MKWRrTAVob8S8TMFb1leloqt1MLWZwCGkJ1F_3NfGRlyzA5QgSabfbF4Y__vK8SytTeE_WVwUZgFF8Sen41EGo0TJi14iKIVuqFWYutgNUxEsrmZbY3EwuORSaAJAADE";
     public static String getToken(){
-        if (Token != null)
+        if (Token != null) {
             return Token;
+        }
         synchronized (GetToken.class){
             if (Token == null){
                 String url = VxConfigEnum.ROOTURLS.val + "cgi-bin/token?grant_type=client_credential&appid="+ VxConfigEnum.APPID.val+"&secret="+ VxConfigEnum.APPSECRET.val;
